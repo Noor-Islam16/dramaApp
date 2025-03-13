@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "306945705859",
+    "firebase_url": "https://alltimeshow-96e73-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "alltimeshow-96e73",
+    "storage_bucket": "alltimeshow-96e73.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306945705859:android:66e70bef6e7d6a0863d8b6",
+        "android_client_info": {
+          "package_name": "com.alltimeshow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306945705859-vlu5ovq1i6tsvlmk31so3eghhaub85bg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSONYdl4Uteat50DfONpc04tTVHPKAbpI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306945705859-vlu5ovq1i6tsvlmk31so3eghhaub85bg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
