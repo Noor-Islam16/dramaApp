@@ -66,4 +66,5 @@ export const images = {
   AcademyBanner: require('./AcademyBanner.png'),
   Birla: require('./GDBS.png'),
   Sadan: require('./RabindraSadan.jpeg'),
+  qrcode: require('./QRCode.png'),
 };

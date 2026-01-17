@@ -45,7 +45,7 @@ const NavBar = () => {
         />
         <Menu.Item
           onPress={() => {
-            navigation.navigate('Play');
+            navigation.navigate('Plays');
             closeMenu();
           }}
           title="Active Shows"

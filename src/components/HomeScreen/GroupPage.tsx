@@ -75,9 +75,7 @@ const GroupPage = () => {
           <View style={styles.cardContainer}>
             <TouchableOpacity
               style={styles.card}
-              onPress={() =>
-                navigation.navigate(item.slug as keyof RootStackParamList)
-              }>
+              onPress={() => navigation.navigate(item.slug as any)}>
               <View style={styles.cardOverlay}>
                 <View style={styles.imageWrapper}>
                   <Image source={item.image} style={styles.cardImage} />

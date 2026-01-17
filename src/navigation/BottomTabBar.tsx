@@ -43,13 +43,13 @@ const BottomTabBar: React.FC = () => {
                 size={24 * scaleFactor}
                 iconColor={isActive ? '#fff' : '#000'}
               />
-              <Text
+              {/* <Text
                 style={[
                   styles.tabText,
                   isActive ? styles.activeText : styles.inactiveText,
                 ]}>
                 {tab.name}
-              </Text>
+              </Text> */}
             </TouchableOpacity>
           );
         })}
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     alignItems: 'center',
     paddingHorizontal: 12 * scaleFactor,
-    paddingVertical: 8 * scaleFactor,
+    paddingVertical: scaleFactor,
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
   },
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 20,
-    paddingHorizontal: 8 * scaleFactor,
+    paddingHorizontal: 4 * scaleFactor,
     // paddingVertical: 2 * scaleFactor,
   },
   activeTab: {

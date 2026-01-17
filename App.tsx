@@ -4,7 +4,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import HomeScreen from './src/pages/Home'; // Ensure path is correct
-import PlayScreen from './src/pages/Play';
 import AboutScreens from './src/pages/AboutScreens';
 import ContactScreens from './src/pages/ContactScreens';
 import Login from './src/pages/Login';
@@ -15,8 +14,6 @@ import store from './src/redux/store';
 import UpcomingPlays from './src/components/Plays/UpcomingPlays';
 import TheaterHalls from './src/pages/TheaterHalls';
 import Group from './src/pages/Group';
-import Purborango from './src/pages/TheaterGroup/PurbarangaInfo';
-import Purborongo from './src/pages/TheaterGroup/PurbarangaInfo';
 import PurbarangaInfo from './src/pages/TheaterGroup/PurbarangaInfo';
 import SamstabInfo from './src/pages/TheaterGroup/SamstabInfo';
 import SangharamInfo from './src/pages/TheaterGroup/SangharamInfo';
@@ -27,6 +24,8 @@ import Birla from './src/pages/Theater/Birla';
 import SadanVenue from './src/pages/Theater/SadanVenue';
 import PlayDetails from './src/components/Plays/PlayDetails';
 import AFCSeating from './src/pages/SeatMatrix/AFCSeating';
+import PaymentPage from './src/pages/PaymentPage';
+import MuktanganSeating from './src/pages/SeatMatrix/MuktanganSeating';
 
 const Stack = createNativeStackNavigator<RootStackParamList>(); // Apply type
 
@@ -51,7 +50,19 @@ export type RootStackParamList = {
   // PlayDetails: {playId: number};
   PlayDetails: undefined;
   AFCSeating: undefined;
+  MuktanganSeating: undefined;
+  Payment: {bookingDetails: BookingDetails}; // Add this line
 };
+
+// Define the BookingDetails interface
+interface BookingDetails {
+  showName: string;
+  date: string;
+  time: string;
+  venue: string;
+  selectedSeats: string[];
+  amount: number;
+}
 
 const App = () => {
   return (
@@ -153,6 +164,16 @@ const App = () => {
               <Stack.Screen
                 name="AFCSeating"
                 component={AFCSeating}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="MuktanganSeating"
+                component={MuktanganSeating}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="Payment"
+                component={PaymentPage}
                 options={{headerShown: false}}
               />
             </Stack.Navigator>

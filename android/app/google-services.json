@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "306945705859-2tr3vbnvbpef0l0kt28tphopq12ncu6b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alltimeshow",
+            "certificate_hash": "37ad4879dda002faddf75312be2ca808be158539"
+          }
+        },
+        {
           "client_id": "306945705859-vlu5ovq1i6tsvlmk31so3eghhaub85bg.apps.googleusercontent.com",
           "client_type": 3
         }

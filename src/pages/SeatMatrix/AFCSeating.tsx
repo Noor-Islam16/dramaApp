@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Alert,
+  StatusBar,
+  SafeAreaView,
 } from 'react-native';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../../App';
 import {IconButton} from 'react-native-paper';
-import {useNavigation} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
-
-// Calculate scaleFactor based on screen width
-const scaleFactor = width / 375; // 375 is the base width (e.g., iPhone 6/7/8)
+const scaleFactor = width / 375;
 
 interface SeatType {
   id: string;
@@ -23,307 +28,592 @@ interface SeatType {
   status: 'available' | 'selected' | 'booked' | 'empty';
 }
 
-const AFCSeating = () => {
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const navigation = useNavigation();
+const rowsLayout = {
+  diamond: {
+    A: [
+      [1, 2, 3, 4, 5],
+      [
+        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+        25,
+      ],
+      [26, 27, 28, 29, 30, 31],
+    ],
+    B: [
+      [1, 2, 3, 4, 5, 6, 7],
+      [
+        8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27,
+      ],
+      [28, 29, 30, 31, 32, 33, 34],
+    ],
+    C: [
+      [1, 2, 3, 4, 5, 6, 7, 8],
+      [
+        9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+        27, 28,
+      ],
+      [29, 30, 31, 32, 33, 34, 35, 36],
+    ],
+  },
+  gold: {
+    D: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      [
+        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+        28, 29,
+      ],
+      [30, 31, 32, 33, 34, 35, 36, 37, 38],
+    ],
+    E: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      [
+        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+        28, 29,
+      ],
+      [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+    ],
+    F: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30,
+      ],
+      [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+    ],
+    G: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30,
+      ],
+      [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+    ],
+    H: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30,
+      ],
+      [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+    ],
+    I: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31,
+      ],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    J: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31,
+      ],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    K: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31,
+      ],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    L: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    M: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      [
+        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        31,
+      ],
+      [32, 33, 34, 35, 36, 37],
+    ],
+  },
+  balcony: {
+    N: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31,
+      ],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    O: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31,
+      ],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    P: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31, 32,
+      ],
+      [33, 34, 35, 36, 37, 38, 39, 40, 41, 42],
+    ],
+    Q: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31, 32, 33,
+      ],
+      [33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    R: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31, 32, 33,
+      ],
+      [33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+    S: [
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      [
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+        29, 30, 31,
+      ],
+      [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
+    ],
+  },
+};
 
-  // Seat matrix layout (same as your provided code)
-  const rowsLayout = {
-    diamond: {
-      A: [
-        [1, 2, 3, 4, 5],
-        [
-          6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-          24, 25,
-        ],
-        [26, 27, 28, 29, 30, 31],
-      ],
-      B: [
-        [1, 2, 3, 4, 5, 6, 7],
-        [
-          8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27,
-        ],
-        [28, 29, 30, 31, 32, 33, 34],
-      ],
-      C: [
-        [1, 2, 3, 4, 5, 6, 7, 8],
-        [
-          9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-          27, 28,
-        ],
-        [29, 30, 31, 32, 33, 34, 35, 36],
-      ],
-    },
-    gold: {
-      D: [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        [
-          10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-          27, 28, 29,
-        ],
-        [30, 31, 32, 33, 34, 35, 36, 37, 38],
-      ],
-      E: [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        [
-          10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-          27, 28, 29,
-        ],
-        [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
-      ],
-      F: [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [
-          11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-          28, 29, 30,
-        ],
-        [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
-      ],
-    },
-    balcony: {
-      G: [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [
-          11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-          28, 29, 30, 31,
-        ],
-        [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
-      ],
-      H: [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [
-          11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-          28, 29, 30, 31,
-        ],
-        [32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
-      ],
-    },
+const AFCSeating: React.FC = () => {
+  const [selectedSeats, setSelectedSeats] = useState<SeatType[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const selectedShow = useSelector(
+    (state: RootState) => state.plays.selectedShow,
+  );
+
+  useEffect(() => {
+    if (!selectedShow) {
+      navigation.navigate('Plays');
+    }
+  }, [selectedShow, navigation]);
+
+  const categoryPrices = {
+    diamond: 300,
+    gold: 200,
+    balcony: 100,
   };
 
-  const handleSeatClick = (seatId: string) => {
-    const newSelectedSeats = selectedSeats.includes(seatId)
-      ? selectedSeats.filter(s => s !== seatId)
-      : [...selectedSeats, seatId];
-    setSelectedSeats(newSelectedSeats);
+  const bookedSeats = ['A15'];
+
+  const handleProceedToPayment = async () => {
+    try {
+      setIsProcessing(true);
+      const bookingDetails = {
+        showName: selectedShow?.title || '',
+        date: selectedShow?.date || '',
+        time: selectedShow?.time?.split('-')[0].trim() || '',
+        venue: selectedShow?.venue || '',
+        selectedSeats: selectedSeats.map(seat => `${seat.row}${seat.number}`),
+        amount: totalAmount,
+      };
+      navigation.navigate('Payment', {bookingDetails});
+    } catch (error) {
+      console.error('Error proceeding to payment:', error);
+      Alert.alert('Error', 'Failed to proceed to payment.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const renderSeat = (seatId: string, row: string, sectionIndex: number) => {
-    const isSelected = selectedSeats.includes(seatId);
-    const isBooked = false; // Add your booked seats logic here
+  const handleSeatClick = (seat: SeatType) => {
+    if (seat.status === 'booked') return;
+
+    const seatIndex = selectedSeats.findIndex(s => s.id === seat.id);
+    if (seatIndex > -1) {
+      setSelectedSeats(selectedSeats.filter(s => s.id !== seat.id));
+    } else {
+      setSelectedSeats([...selectedSeats, seat]);
+    }
+  };
+
+  const getSeatColor = (seat: SeatType) => {
+    if (seat.status === 'empty') return styles.invisibleSeat;
+    if (seat.status === 'booked') {
+      switch (seat.category) {
+        case 'diamond':
+          return styles.bookedDiamondSeat;
+        case 'gold':
+          return styles.bookedGoldSeat;
+        case 'balcony':
+          return styles.bookedBalconySeat;
+      }
+    }
+    if (selectedSeats.some(s => s.id === seat.id)) return styles.selectedSeat;
+
+    switch (seat.category) {
+      case 'diamond':
+        return styles.diamondSeat;
+      case 'gold':
+        return styles.goldSeat;
+      case 'balcony':
+        return styles.balconySeat;
+      // default:
+      //   return styles.defaultSeat;
+    }
+  };
+
+  const renderSeat = (seat: SeatType) => {
+    const seatStatus = bookedSeats.includes(seat.id) ? 'booked' : 'available';
+
+    const seatWithStatus: SeatType = {
+      ...seat,
+      status: seatStatus,
+    };
 
     return (
       <TouchableOpacity
-        key={seatId}
+        key={seat.id}
+        onPress={() => handleSeatClick(seatWithStatus)}
+        disabled={seatStatus === 'booked'}
         style={[
           styles.seat,
-          isSelected && styles.selectedSeat,
-          isBooked && styles.bookedSeat,
-        ]}
-        onPress={() => handleSeatClick(seatId)}
-        disabled={isBooked}>
-        <Text style={styles.seatText}>{seatId.replace(row, '')}</Text>
+          getSeatColor(seatWithStatus),
+          seatStatus === 'booked' && styles.disabledSeat,
+        ]}>
+        <Text style={styles.seatText}>{seat.number}</Text>
       </TouchableOpacity>
     );
   };
-
   const renderSection = (category: keyof typeof rowsLayout) => {
     return (
-      <View key={category} style={styles.categoryContainer}>
-        <Text style={styles.categoryTitle}>{category.toUpperCase()}</Text>
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
+          Rs. {categoryPrices[category]} {category.toUpperCase()}
+        </Text>
         {Object.entries(rowsLayout[category]).map(([row, sections]) => (
           <View key={row} style={styles.rowContainer}>
-            <Text style={styles.rowTitle}>{row}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.seatsContainer}>
-                {sections.map((section: number[], sectionIndex: number) => (
-                  <View key={sectionIndex} style={styles.section}>
-                    {section.map((seatNumber: number) => {
-                      const seatId = `${row}${seatNumber}`;
-                      return renderSeat(seatId, row, sectionIndex);
-                    })}
-                  </View>
-                ))}
+            <Text style={styles.rowLabel}>{row}</Text>
+            <View style={styles.rowSections}>
+              {/* Left Section */}
+              <View style={styles.section}>
+                {sections[0].map(number => {
+                  const seatId = `${row}${number}`;
+                  const seat: SeatType = {
+                    id: seatId,
+                    row,
+                    number,
+                    category,
+                    status: 'available',
+                  };
+                  return renderSeat(seat);
+                })}
               </View>
-            </ScrollView>
+
+              {/* Middle Section */}
+              <View style={styles.section}>
+                {sections[1].map(number => {
+                  const seatId = `${row}${number}`;
+                  const seat: SeatType = {
+                    id: seatId,
+                    row,
+                    number,
+                    category,
+                    status: 'available',
+                  };
+                  return renderSeat(seat);
+                })}
+              </View>
+
+              {/* Right Section */}
+              <View style={styles.section}>
+                {sections[2].map(number => {
+                  const seatId = `${row}${number}`;
+                  const seat: SeatType = {
+                    id: seatId,
+                    row,
+                    number,
+                    category,
+                    status: 'available',
+                  };
+                  return renderSeat(seat);
+                })}
+              </View>
+            </View>
           </View>
         ))}
       </View>
     );
   };
 
-  const ExitSign = ({
-    side,
-  }: {
-    side: 'left' | 'right' | 'middle-left' | 'middle-right';
-  }) => {
-    const isMiddle = side.startsWith('middle');
-
-    return (
-      <View
-        style={[
-          styles.exitSign,
-          isMiddle ? styles.middleExit : styles.sideExit,
-          side.includes('left') ? styles.leftExit : styles.rightExit,
-        ]}>
-        <View style={styles.exitLabel}>
-          <Text style={styles.exitText}>EXIT</Text>
-        </View>
-        <View style={styles.exitLine} />
-      </View>
+  const calculateTotalAmount = () => {
+    return selectedSeats.reduce(
+      (total, seat) => total + categoryPrices[seat.category],
+      0,
     );
   };
 
+  const totalAmount = calculateTotalAmount();
+
   return (
-    <ScrollView style={styles.container}>
-      <IconButton
-        icon="arrow-left"
-        onPress={() => navigation.goBack()}
-        style={styles.backButton}
-      />
-      <Text style={styles.title}>Theater Hall</Text>
-      <View style={styles.screenContainer}>
-        <ExitSign side="left" />
-        <View style={styles.screen}>
-          <Text style={styles.screenText}>STAGE</Text>
+    <SafeAreaView style={styles.container}>
+      {/* <StatusBar barStyle="light-content" /> */}
+      <ScrollView>
+        {/* Header */}
+        <View style={styles.header}>
+          <IconButton
+            icon="arrow-left"
+            size={24 * scaleFactor}
+            iconColor="#000"
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          />
+          <View style={styles.headerContent}>
+            <Text style={styles.venueText}>{selectedShow?.venue}</Text>
+            <Text style={styles.venueText}>{selectedShow?.title}</Text>
+            <Text style={styles.showTimeText}>
+              {selectedShow?.date} | {selectedShow?.time}
+            </Text>
+          </View>
         </View>
-        <ExitSign side="right" />
-      </View>
-      {Object.keys(rowsLayout).map(category =>
-        renderSection(category as keyof typeof rowsLayout),
-      )}
-      <TouchableOpacity
-        style={styles.proceedButton}
-        disabled={selectedSeats.length === 0}
-        // onPress={() => navigation.navigate('Payment')}
-      >
-        <Text style={styles.proceedButtonText}>
-          {selectedSeats.length > 0
-            ? `Proceed to Pay (${selectedSeats.length} seats)`
-            : 'Select seats to proceed'}
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+
+        {/* Legend */}
+        <View style={styles.legendContainer}>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendBox, styles.bookedSeat]} />
+            <Text style={styles.legendText}>Booked</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendBox, styles.selectedSeat]} />
+            <Text style={styles.legendText}>Selected</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendBox, styles.availableSeat]} />
+            <Text style={styles.legendText}>Available</Text>
+          </View>
+        </View>
+
+        {/* Screen */}
+        <View style={styles.screenContainer}>
+          <View style={styles.screen} />
+          <Text style={styles.screenText}>All eyes this way please!</Text>
+        </View>
+
+        {/* Seating Layout with Horizontal Scroll */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.seatingContainer}>
+            {renderSection('diamond')}
+            {renderSection('gold')}
+            {renderSection('balcony')}
+          </View>
+        </ScrollView>
+
+        {/* Selected Seats Summary */}
+        {selectedSeats.length > 0 && (
+          <View style={styles.summaryContainer}>
+            <Text style={styles.summaryText}>
+              Selected Seats:{' '}
+              {selectedSeats
+                .map(seat => `${seat.row}${seat.number}`)
+                .join(', ')}
+              | Total Amount: ₹{totalAmount}
+            </Text>
+          </View>
+        )}
+
+        {/* Proceed Button */}
+        <TouchableOpacity
+          disabled={selectedSeats.length === 0 || isProcessing}
+          onPress={handleProceedToPayment}
+          style={[
+            styles.proceedButton,
+            selectedSeats.length === 0 && styles.disabledButton,
+          ]}>
+          <Text style={styles.proceedButtonText}>
+            {selectedSeats.length > 0
+              ? `Proceed to Pay ₹${totalAmount}`
+              : 'Select seats to proceed'}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10 * scaleFactor,
+    backgroundColor: '#f5f5f5',
+    paddingTop: StatusBar.currentHeight,
   },
-  backButton: {
-    position: 'absolute',
-    top: 10 * scaleFactor,
-    left: 10 * scaleFactor,
-    zIndex: 1,
-  },
-  title: {
-    fontSize: 24 * scaleFactor,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20 * scaleFactor,
-  },
-  screenContainer: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20 * scaleFactor,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    marginBottom: 16,
   },
-  screen: {
+  backButton: {
+    marginRight: 16,
+  },
+  headerContent: {
     flex: 1,
     alignItems: 'center',
   },
-  screenText: {
-    fontSize: 18 * scaleFactor,
-    color: 'grey',
-  },
-  categoryContainer: {
-    marginBottom: 20 * scaleFactor,
-  },
-  categoryTitle: {
-    fontSize: 18 * scaleFactor,
+  venueText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10 * scaleFactor,
+    color: '#000',
+  },
+  showTimeText: {
+    fontSize: 14,
+    color: '#666',
+    paddingTop: 10 * scaleFactor,
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 16,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 8,
+  },
+  legendBox: {
+    width: 16,
+    height: 16,
+    marginRight: 4,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  bookedSeat: {
+    backgroundColor: '#D1D5DB',
+  },
+  selectedSeat: {
+    backgroundColor: '#10B981',
+  },
+  availableSeat: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
+  screenContainer: {
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  screen: {
+    width: '80%',
+    height: 4,
+    backgroundColor: '#D1D5DB',
+    borderRadius: 2,
+  },
+  screenText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 8,
+  },
+  seatingContainer: {
+    paddingHorizontal: 16,
+  },
+  sectionContainer: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
   },
   rowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10 * scaleFactor,
+    marginBottom: 8,
   },
-  rowTitle: {
-    width: 30 * scaleFactor,
-    fontSize: 16 * scaleFactor,
+  rowLabel: {
+    width: 24,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
   },
-  seatsContainer: {
+  rowSections: {
+    flex: 1,
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   section: {
     flexDirection: 'row',
-    marginRight: 10 * scaleFactor,
-  },
-  seat: {
-    width: 30 * scaleFactor,
-    height: 30 * scaleFactor,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 2 * scaleFactor,
-    backgroundColor: '#ddd',
-    borderRadius: 5 * scaleFactor,
   },
-  selectedSeat: {
-    backgroundColor: 'green',
-  },
-  bookedSeat: {
-    backgroundColor: '#ccc',
+  seat: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 2,
+    borderRadius: 4,
   },
   seatText: {
-    fontSize: 12 * scaleFactor,
+    fontSize: 10,
+    color: '#FFFFFF',
+  },
+  diamondSeat: {
+    backgroundColor: '#8B5CF6',
+  },
+  goldSeat: {
+    backgroundColor: '#F59E0B',
+  },
+  balconySeat: {
+    backgroundColor: '#3B82F6',
+  },
+  bookedDiamondSeat: {
+    backgroundColor: '#EDE9FE',
+  },
+  bookedGoldSeat: {
+    backgroundColor: '#FEF3C7',
+  },
+  bookedBalconySeat: {
+    backgroundColor: '#DBEAFE',
+  },
+  disabledSeat: {
+    opacity: 0.5,
+  },
+  invisibleSeat: {
+    opacity: 0,
+  },
+  summaryContainer: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  summaryText: {
+    fontSize: 16,
+    color: '#333',
   },
   proceedButton: {
-    backgroundColor: 'green',
-    padding: 15 * scaleFactor,
-    borderRadius: 10 * scaleFactor,
+    backgroundColor: '#10B981',
+    padding: 16,
+    borderRadius: 8,
+    marginHorizontal: 16,
+    marginBottom: 16,
     alignItems: 'center',
-    marginTop: 20 * scaleFactor,
   },
   proceedButtonText: {
-    color: 'white',
-    fontSize: 16 * scaleFactor,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#FFFFFF',
   },
-  exitSign: {
-    alignItems: 'center',
-  },
-  middleExit: {
-    position: 'absolute',
-    top: 0,
-  },
-  sideExit: {
-    position: 'relative',
-  },
-  leftExit: {
-    left: 10 * scaleFactor,
-  },
-  rightExit: {
-    right: 10 * scaleFactor,
-  },
-  exitLabel: {
-    backgroundColor: 'green',
-    paddingHorizontal: 10 * scaleFactor,
-    paddingVertical: 5 * scaleFactor,
-    borderRadius: 5 * scaleFactor,
-  },
-  exitText: {
-    color: 'white',
-    fontSize: 12 * scaleFactor,
-    fontWeight: 'bold',
-  },
-  exitLine: {
-    height: 20 * scaleFactor,
-    width: 8 * scaleFactor,
-    backgroundColor: '#ccc',
-    marginTop: 5 * scaleFactor,
+  disabledButton: {
+    backgroundColor: '#D1D5DB',
   },
 });
 

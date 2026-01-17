@@ -57,9 +57,7 @@ const TheaterHallsPage = () => {
           <View style={styles.cardContainer}>
             <TouchableOpacity
               style={styles.card}
-              onPress={() =>
-                navigation.navigate(item.slug as keyof RootStackParamList)
-              }>
+              onPress={() => navigation.navigate(item.slug as any)}>
               <Image source={item.image} style={styles.cardImage} />
               <View style={styles.overlay}>
                 <Text style={styles.cardTitle}>{item.name}</Text>

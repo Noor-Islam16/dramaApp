@@ -68,9 +68,7 @@ const TheaterHalls = () => {
           {groups.map(group => (
             <TouchableOpacity
               key={group.id}
-              onPress={() =>
-                navigation.navigate(group.slug as keyof RootStackParamList)
-              }>
+              onPress={() => navigation.navigate(group.slug as any)}>
               <Card style={styles.card}>
                 <Card.Cover source={group.image} style={styles.cardImage} />
                 <Card.Content style={styles.cardContent}>

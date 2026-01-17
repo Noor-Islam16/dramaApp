@@ -61,9 +61,22 @@ const PlayDetails = () => {
     });
   };
 
+  // Function to handle booking navigation based on venue
+  const handleBookTickets = () => {
+    if (
+      selectedShow.venue === 'Academy of Fine Arts2, Cathedral Road Kolkata'
+    ) {
+      navigation.navigate('AFCSeating');
+    } else if (selectedShow.venue === 'Muktangan Rangalaya') {
+      navigation.navigate('MuktanganSeating');
+    } else {
+      Alert.alert('Error', 'Invalid venue. Cannot proceed with booking.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      {/* <StatusBar barStyle="light-content" /> */}
 
       {/* Header with Back Button */}
       <View style={styles.headerContainer}>
@@ -234,9 +247,7 @@ const PlayDetails = () => {
           mode="contained"
           style={styles.bookButton}
           labelStyle={styles.bookButtonText}
-          onPress={() => {
-            navigation.navigate('AFCSeating');
-          }}>
+          onPress={handleBookTickets}>
           BOOK TICKETS
         </Button>
       </View>
